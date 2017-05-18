@@ -12,7 +12,7 @@ namespace TdkDictionaryWin10.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return ((AutoSuggestBoxQuerySubmittedEventArgs)value).ChosenSuggestion as String;
+            return ((AutoSuggestBoxQuerySubmittedEventArgs)value).QueryText as String;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
