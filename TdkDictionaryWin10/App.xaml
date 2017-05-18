@@ -1,8 +1,15 @@
-﻿<Application
-    x:Class="TdkDictionaryWin10.App"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:TdkDictionaryWin10"
-    RequestedTheme="Light">
+﻿<common:BootStrapper x:Class="TdkDictionaryWin10.App"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:common="using:Template10.Common"
+                     RequestedTheme="Light">
 
-</Application>
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles\Custom.xaml" />
+                <ResourceDictionary Source="ResourceDictionaries\Converters.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</common:BootStrapper>

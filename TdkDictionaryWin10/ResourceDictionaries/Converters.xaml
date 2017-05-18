@@ -1,0 +1,12 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:TdkDictionaryWin10.Converters"
+    xmlns:local="using:TdkDictionaryWin10.ResourceDictionaries">
+    
+    <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" ReferenceValue="True" />
+    <converters:BooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" ReferenceValue="False" />
+    <converters:ContentLengthToVisibilityConverter x:Key="ContentLengthToVisibilityConverter" />
+    <converters:AutoSuggestQueryParameterConverter x:Key="AutoSuggestQueryParameterConverter" />
+    
+</ResourceDictionary>
