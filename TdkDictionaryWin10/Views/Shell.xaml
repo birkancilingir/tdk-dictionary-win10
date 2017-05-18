@@ -21,7 +21,13 @@
                     <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:MainPage">
                         <StackPanel Orientation="Horizontal">
                             <SymbolIcon Width="48" Height="48" Symbol="Home" />
-                            <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Home" />
+                            <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Ana Sayfa" />
+                        </StackPanel>
+                    </Controls:HamburgerButtonInfo>
+                    <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:MainPage">
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Width="48" Height="48" Symbol="Favorite" />
+                            <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Sık Kullanılanlar" />
                         </StackPanel>
                     </Controls:HamburgerButtonInfo>
                 </Controls:HamburgerMenu.PrimaryButtons>
@@ -34,7 +40,7 @@
                         </Controls:HamburgerButtonInfo.NavigationTransitionInfo>
                         <StackPanel Orientation="Horizontal">
                             <SymbolIcon Width="48" Height="48" Symbol="Setting" />
-                            <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Settings" />
+                            <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Ayarlar" />
                         </StackPanel>
                     </Controls:HamburgerButtonInfo>
                 </Controls:HamburgerMenu.SecondaryButtons>
