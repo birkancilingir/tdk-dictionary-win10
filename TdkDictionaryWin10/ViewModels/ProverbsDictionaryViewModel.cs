@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace TdkDictionaryWin10.ViewModels
 {
-    public class BigTurkishDictionaryViewModel : ViewModelBase
+    public class ProverbsDictionaryViewModel : ViewModelBase
     {
         private IDictionaryDataService _dataService = new DictionaryDataService();
 
@@ -26,7 +26,7 @@ namespace TdkDictionaryWin10.ViewModels
             public String Value { get; set; }
         }
 
-        public BigTurkishDictionaryViewModel()
+        public ProverbsDictionaryViewModel()
         {
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
             {
@@ -37,15 +37,15 @@ namespace TdkDictionaryWin10.ViewModels
 
             MatchTypes = new ObservableCollection<MatchTypeItem>
             {
-                //TODO: new MatchTypeItem {Key = "FullMatch", Value = resourceLoader.GetString("ComboBoxItemFullMatch") },
-                //TODO: new MatchTypeItem {Key = "PartialMatch", Value = resourceLoader.GetString("ComboBoxItemPartialMatch") }
-                new MatchTypeItem {Key = "FullMatch", Value = "Tam sözcük" },
-                new MatchTypeItem {Key = "PartialMatch", Value = "1. ve/veya 2. kelimesi ... başlayan" }
+                //TODO: new MatchTypeItem {Key = "InProverb", Value = resourceLoader.GetString("ComboBoxItemInProverb") },
+                //TODO: new MatchTypeItem {Key = "InMeaning", Value = resourceLoader.GetString("ComboBoxItemInMeaning") }
+                new MatchTypeItem {Key = "InProverb", Value = "Atasözü / Deyimde" },
+                new MatchTypeItem {Key = "InMeaning", Value = "Anlamda" }
             };
 
             MatchType = MatchTypes[0];
 
-            Words = new ObservableCollection<Word>();
+            Proverbs = new ObservableCollection<Proverb>();
         }
 
         #region Data Members
@@ -66,11 +66,11 @@ namespace TdkDictionaryWin10.ViewModels
             set { Set(ref _Value, value); }
         }
 
-        private ObservableCollection<Word> _words;
-        public ObservableCollection<Word> Words
+        private ObservableCollection<Proverb> _proverb;
+        public ObservableCollection<Proverb> Proverbs
         {
-            get { return this._words; }
-            set { Set(ref this._words, value); }
+            get { return this._proverb; }
+            set { Set(ref this._proverb, value); }
         }
 
         private Boolean _isNoResultFound = false;
@@ -81,28 +81,6 @@ namespace TdkDictionaryWin10.ViewModels
             set
             {
                 Set(ref this._isNoResultFound, value);
-            }
-        }
-
-        private Boolean _isSuggesstion = false;
-
-        public Boolean IsSuggestion
-        {
-            get { return this._isSuggesstion; }
-            set
-            {
-                Set(ref this._isSuggesstion, value);
-            }
-        }
-
-        private Boolean _isPartialMatch = false;
-
-        public Boolean IsPartialMatch
-        {
-            get { return this._isPartialMatch; }
-            set
-            {
-                Set(ref this._isPartialMatch, value);
             }
         }
 
@@ -143,18 +121,18 @@ namespace TdkDictionaryWin10.ViewModels
             NavigationService.Navigate(typeof(Views.SettingsPage), 2);
 
 
-        DelegateCommand<string> _SearchWords;
-        public DelegateCommand<string> SearchWords =>
-            _SearchWords
-                ?? (_SearchWords = new DelegateCommand<string>((word) =>
+        DelegateCommand<string> _SearchProverbs;
+        public DelegateCommand<string> SearchProverbs =>
+            _SearchProverbs
+                ?? (_SearchProverbs = new DelegateCommand<string>((word) =>
                 {
-                    Debug.WriteLine("SearchWords");
-                    ListWords(null, word);
+                    Debug.WriteLine("SearchProverbs");
+                    ListProverbs(null, word);
                 }, (word) => !String.IsNullOrEmpty(word))
                    );
 
 
-        private async void ListWords(Nullable<int> id, String name)
+        private async void ListProverbs(Nullable<int> id, String name)
         {
             if (String.IsNullOrWhiteSpace(name) || MatchType == null)
                 return;
@@ -167,37 +145,32 @@ namespace TdkDictionaryWin10.ViewModels
                 return;
             }
 
-            if (Words != null)
-                Words.Clear();
+            if (Proverbs != null)
+                Proverbs.Clear();
             IsNoResultFound = false;
-            IsSuggestion = false;
 
-            BigTurkishDictionaryFilter filter = new BigTurkishDictionaryFilter();
+            ProverbsDictionaryFilter filter = new ProverbsDictionaryFilter();
             filter.SearchString = name;
             filter.SearchId = id;
 
-            if (MatchType.Key.Equals("FullMatch"))
+            if (MatchType.Key.Equals("InProverb"))
             {
-                filter.MatchType = BigTurkishDictionaryFilter.MatchTypeFilter.FULL_MATCH;
-                IsPartialMatch = false;
+                filter.MatchType = ProverbsDictionaryFilter.MatchTypeFilter.IN_PROVERB;
             }
             else
             {
-                filter.MatchType = BigTurkishDictionaryFilter.MatchTypeFilter.PARTIAL_MATCH;
-                IsPartialMatch = true;
+                filter.MatchType = ProverbsDictionaryFilter.MatchTypeFilter.IN_MEANING;
             }
 
             try
             {
-                BigTurkishDictionarySearchResult result = await _dataService.SearchBigTurkishDictionary(filter,
+                ProverbsDictionarySearchResult result = await _dataService.SearchProverbsDictionary(filter,
                     () => { Views.Shell.SetBusy(true, "Lütfen Bekleyiniz"); },
                     () => { Views.Shell.SetBusy(false); }
                 );
 
-                IsSuggestion = result.IsSuggestion;
-
-                Words = new ObservableCollection<Word>(result.Words);
-                if (Words.Count == 0)
+                Proverbs = new ObservableCollection<Proverb>(result.Proverbs);
+                if (Proverbs.Count == 0)
                     IsNoResultFound = true;
             }
             catch (Exception e)

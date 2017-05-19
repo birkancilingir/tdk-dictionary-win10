@@ -84,7 +84,7 @@ namespace TdkDataService
             }
         }
 
-        public async Task<SearchResult> SearchBigTurkishDictionary(BigTurkishDictionaryFilter filter, Action onLoadingStarts, Action onLoadingEnds)
+        public async Task<BigTurkishDictionarySearchResult> SearchBigTurkishDictionary(BigTurkishDictionaryFilter filter, Action onLoadingStarts, Action onLoadingEnds)
         {
             onLoadingStarts();
 
@@ -302,7 +302,165 @@ namespace TdkDataService
 
             onLoadingEnds();
 
-            return new SearchResult(words, isSuggestion);
+            return new BigTurkishDictionarySearchResult(words, isSuggestion);
+        }
+
+        public async Task<ProverbsDictionarySearchResult> SearchProverbsDictionary(ProverbsDictionaryFilter filter, Action onLoadingStarts, Action onLoadingEnds)
+        {
+
+
+
+            onLoadingStarts();
+
+            string responseBody = null;
+
+            string uri = DictionaryServiceConstants.SITE_ENDPOINT + "?option=com_atasozleri&arama=kelime";
+            Dictionary<String, String> parameters = new Dictionary<String, String>
+            {
+                {"gonder", "ARA"},
+                {"kategori", "atalst"},
+                {"kelime", System.Net.WebUtility.UrlEncode(filter.SearchString)}
+            };
+
+            switch (filter.MatchType)
+            {
+                case ProverbsDictionaryFilter.MatchTypeFilter.IN_PROVERB:
+                    parameters.Add("hng", "tam");
+                    break;
+                case ProverbsDictionaryFilter.MatchTypeFilter.IN_MEANING:
+                    parameters.Add("hng", "dzn");
+                    break;
+                default:
+                    parameters.Add("hng", "tam");
+                    break;
+            }
+
+            responseBody = await PostRequest(uri, parameters);
+
+            List<Word> words = new List<Word>();
+
+            using (StreamReader reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(responseBody))))
+            {
+                String responseHtml = reader.ReadToEnd();
+
+                // Clear illegal tags as they cause errors while parsing
+                //responseHtml = responseHtml.Replace("< ar", "ar");
+                //responseHtml = responseHtml.Replace("<ar", "ar");
+                //responseHtml = responseHtml.Replace("< Ar", "Ar");
+                //responseHtml = responseHtml.Replace("<Ar", "Ar");
+
+                HtmlDocument doc = new HtmlDocument();
+                doc.OptionFixNestedTags = true;
+                doc.LoadHtml(responseHtml);
+
+                HtmlNode rootNode = doc.DocumentNode
+                    .Descendants("div")
+                    .Where(div => div.GetAttributeValue("class", "") == "main_body")
+                    .First();
+
+                if (rootNode != null)
+                {
+                    List<HtmlNode> nodes = doc.DocumentNode
+                            .Descendants()
+                            .Where(node => (node.Name == "a"
+                                            && node.GetAttributeValue("href", "").StartsWith("/index.php?option=com_bts")
+                                            && (node.ParentNode.Name != "span" || node.ParentNode.GetAttributeValue("class", "") != "comicm")
+                                            && node.ParentNode.Name != "li")).ToList();
+                    if (nodes.Count() > 0)
+                    {
+                        // Check for suggestions
+                        foreach (HtmlNode node in nodes)
+                        {
+                            Word word = new Word();
+
+                            int id;
+                            if (Int32.TryParse(node.GetAttributeValue("href", "").Substring(node.GetAttributeValue("href", "").LastIndexOf("kelimesec=") + 10), out id))
+                                word.Id = id;
+                            else
+                                word.Id = null;
+                            word.Name = node.InnerText.Replace("&nbsp;", "").Trim();
+                            word.Origin = String.Empty;
+                            word.Description = String.Empty;
+                            word.DictionaryName = String.Empty;
+                            word.Year = null;
+
+                            words.Add(word);
+                        }
+
+                        List<String> pages = doc.DocumentNode
+                            .Descendants()
+                            .Where(node => (node.Name == "option" && node.ParentNode.GetAttributeValue("name", "") != "ayn"))
+                            .Select(node => (node.GetAttributeValue("value", "")))
+                            .ToList();
+
+                        foreach (String page in pages)
+                        {
+                            String nextUri = DictionaryServiceConstants.SITE_ENDPOINT
+                                + "?option=com_bts&view=bts&kategori1=verilst&ayn1=dzn&konts=" + page + "&kelime1=" + System.Net.WebUtility.UrlEncode(filter.SearchString);
+
+                            responseBody = await GetRequest(nextUri);
+
+                            using (StreamReader nextReader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(responseBody))))
+                            {
+                                HtmlDocument nextdoc = new HtmlDocument();
+                                nextdoc.OptionFixNestedTags = true;
+                                nextdoc.LoadHtml(nextReader.ReadToEnd());
+
+                                rootNode = nextdoc.DocumentNode
+                                    .Descendants("div")
+                                    .Where(div => div.GetAttributeValue("class", "") == "main_body")
+                                    .First();
+
+                                if (rootNode != null)
+                                {
+                                    nodes = nextdoc.DocumentNode
+                                        .Descendants()
+                                        .Where(node => (node.Name == "a"
+                                                        && node.GetAttributeValue("href", "").StartsWith("/index.php?option=com_bts")
+                                                        && (node.ParentNode.Name != "span" || node.ParentNode.GetAttributeValue("class", "") != "comicm")
+                                                        && node.ParentNode.Name != "li")).ToList();
+
+                                    foreach (HtmlNode node in nodes)
+                                    {
+                                        Word word = new Word();
+
+                                        int id;
+                                        if (Int32.TryParse(node.GetAttributeValue("href", "").Substring(node.GetAttributeValue("href", "").LastIndexOf("kelimesec=") + 10), out id))
+                                            word.Id = id;
+                                        else
+                                            word.Id = null;
+                                        word.Name = node.InnerText.Replace("&nbsp;", "").Trim();
+                                        word.Origin = String.Empty;
+                                        word.Description = String.Empty;
+                                        word.DictionaryName = String.Empty;
+                                        word.Year = null;
+
+                                        words.Add(word);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (words.Count > 0)
+                            isSuggestion = true;
+                    }
+                }
+            }
+
+            onLoadingEnds();
+
+            //return new ProverbsDictionarySearchResult(words);
+
+            return new ProverbsDictionarySearchResult(null);
+
+
+
+
+
+
+
+
+
         }
     }
 }

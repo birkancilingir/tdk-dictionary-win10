@@ -195,7 +195,7 @@ namespace TdkDictionaryWin10.ViewModels
 
             try
             {
-                SearchResult result = await _dataService.SearchBigTurkishDictionary(filter,
+                BigTurkishDictionarySearchResult result = await _dataService.SearchBigTurkishDictionary(filter,
                     () => { Views.Shell.SetBusy(true, "Lütfen Bekleyiniz"); },
                     () => { Views.Shell.SetBusy(false); }
                 );
