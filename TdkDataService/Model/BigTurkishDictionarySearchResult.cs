@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace TdkDataService.Model
 {
-    public class SearchResult
+    public class BigTurkishDictionarySearchResult
     {
-        public SearchResult(List<Word> words, Boolean isSuggestion)
+        public BigTurkishDictionarySearchResult(List<Word> words, Boolean isSuggestion)
         {
             this.Words = words;
             this.IsSuggestion = isSuggestion;

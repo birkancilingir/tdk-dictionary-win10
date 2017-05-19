@@ -112,7 +112,9 @@
     <Compile Include="DictionaryServiceConstants.cs" />
     <Compile Include="DictionaryServiceFilters.cs" />
     <Compile Include="IDictionaryDataService.cs" />
-    <Compile Include="Model\SearchResult.cs" />
+    <Compile Include="Model\Proverb.cs" />
+    <Compile Include="Model\BigTurkishDictionarySearchResult.cs" />
+    <Compile Include="Model\ProverbsDictionarySearchResult.cs" />
     <Compile Include="Model\Word.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\TdkDataService.rd.xml" />

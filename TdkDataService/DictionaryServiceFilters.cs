@@ -14,4 +14,11 @@ namespace TdkDataService
 
         public MatchTypeFilter MatchType { get; set; }
     }
+
+    public class ProverbsDictionaryFilter : BaseFilter
+    {
+        public enum MatchTypeFilter { IN_PROVERB, IN_MEANING };
+
+        public MatchTypeFilter MatchType { get; set; }
+    }
 }

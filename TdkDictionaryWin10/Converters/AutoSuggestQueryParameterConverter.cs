@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Data;
 
 namespace TdkDictionaryWin10.Converters
 {
+    // http://stackoverflow.com/a/36171457/252738
     class AutoSuggestQueryParameterConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
