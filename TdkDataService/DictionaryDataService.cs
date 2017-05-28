@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using TdkDataService.Model;
@@ -34,7 +35,11 @@ namespace TdkDataService
                         }
                     }
 
-                    return await response.Content.ReadAsStringAsync();
+                    //return await response.Content.ReadAsStringAsync();
+
+                    var buffer = await response.Content.ReadAsBufferAsync();
+                    var byteArray = buffer.ToArray();
+                    return Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
                 }
             }
             catch (Exception)
@@ -307,9 +312,6 @@ namespace TdkDataService
 
         public async Task<ProverbsDictionarySearchResult> SearchProverbsDictionary(ProverbsDictionaryFilter filter, Action onLoadingStarts, Action onLoadingEnds)
         {
-
-
-
             onLoadingStarts();
 
             string responseBody = null;
@@ -337,18 +339,12 @@ namespace TdkDataService
 
             responseBody = await PostRequest(uri, parameters);
 
-            List<Word> words = new List<Word>();
+            List<Proverb> proverbs = new List<Proverb>();
 
             using (StreamReader reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(responseBody))))
             {
                 String responseHtml = reader.ReadToEnd();
-
-                // Clear illegal tags as they cause errors while parsing
-                //responseHtml = responseHtml.Replace("< ar", "ar");
-                //responseHtml = responseHtml.Replace("<ar", "ar");
-                //responseHtml = responseHtml.Replace("< Ar", "Ar");
-                //responseHtml = responseHtml.Replace("<Ar", "Ar");
-
+                
                 HtmlDocument doc = new HtmlDocument();
                 doc.OptionFixNestedTags = true;
                 doc.LoadHtml(responseHtml);
@@ -361,106 +357,28 @@ namespace TdkDataService
                 if (rootNode != null)
                 {
                     List<HtmlNode> nodes = doc.DocumentNode
-                            .Descendants()
-                            .Where(node => (node.Name == "a"
-                                            && node.GetAttributeValue("href", "").StartsWith("/index.php?option=com_bts")
-                                            && (node.ParentNode.Name != "span" || node.ParentNode.GetAttributeValue("class", "") != "comicm")
-                                            && node.ParentNode.Name != "li")).ToList();
-                    if (nodes.Count() > 0)
+                                .Descendants()
+                                .Where(node => (node.Name == "p"
+                                                && (node.GetAttributeValue("class", "") == "thomicb"))).ToList();
+                    for (int i = 0; i < nodes.Count; i++)
                     {
-                        // Check for suggestions
-                        foreach (HtmlNode node in nodes)
-                        {
-                            Word word = new Word();
+                        HtmlNode nameSibling = nodes[i].NextSibling.NextSibling;
+                        HtmlNode descriptionSibling = nameSibling.NextSibling.NextSibling;
+                        HtmlNode typeSibling = descriptionSibling.NextSibling.NextSibling;
 
-                            int id;
-                            if (Int32.TryParse(node.GetAttributeValue("href", "").Substring(node.GetAttributeValue("href", "").LastIndexOf("kelimesec=") + 10), out id))
-                                word.Id = id;
-                            else
-                                word.Id = null;
-                            word.Name = node.InnerText.Replace("&nbsp;", "").Trim();
-                            word.Origin = String.Empty;
-                            word.Description = String.Empty;
-                            word.DictionaryName = String.Empty;
-                            word.Year = null;
+                        Proverb proverb = new Proverb();
+                        proverb.Name = nameSibling.InnerText;
+                        proverb.Description = descriptionSibling.InnerText;
+                        proverb.Type = typeSibling.InnerText;
 
-                            words.Add(word);
-                        }
-
-                        List<String> pages = doc.DocumentNode
-                            .Descendants()
-                            .Where(node => (node.Name == "option" && node.ParentNode.GetAttributeValue("name", "") != "ayn"))
-                            .Select(node => (node.GetAttributeValue("value", "")))
-                            .ToList();
-
-                        foreach (String page in pages)
-                        {
-                            String nextUri = DictionaryServiceConstants.SITE_ENDPOINT
-                                + "?option=com_bts&view=bts&kategori1=verilst&ayn1=dzn&konts=" + page + "&kelime1=" + System.Net.WebUtility.UrlEncode(filter.SearchString);
-
-                            responseBody = await GetRequest(nextUri);
-
-                            using (StreamReader nextReader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(responseBody))))
-                            {
-                                HtmlDocument nextdoc = new HtmlDocument();
-                                nextdoc.OptionFixNestedTags = true;
-                                nextdoc.LoadHtml(nextReader.ReadToEnd());
-
-                                rootNode = nextdoc.DocumentNode
-                                    .Descendants("div")
-                                    .Where(div => div.GetAttributeValue("class", "") == "main_body")
-                                    .First();
-
-                                if (rootNode != null)
-                                {
-                                    nodes = nextdoc.DocumentNode
-                                        .Descendants()
-                                        .Where(node => (node.Name == "a"
-                                                        && node.GetAttributeValue("href", "").StartsWith("/index.php?option=com_bts")
-                                                        && (node.ParentNode.Name != "span" || node.ParentNode.GetAttributeValue("class", "") != "comicm")
-                                                        && node.ParentNode.Name != "li")).ToList();
-
-                                    foreach (HtmlNode node in nodes)
-                                    {
-                                        Word word = new Word();
-
-                                        int id;
-                                        if (Int32.TryParse(node.GetAttributeValue("href", "").Substring(node.GetAttributeValue("href", "").LastIndexOf("kelimesec=") + 10), out id))
-                                            word.Id = id;
-                                        else
-                                            word.Id = null;
-                                        word.Name = node.InnerText.Replace("&nbsp;", "").Trim();
-                                        word.Origin = String.Empty;
-                                        word.Description = String.Empty;
-                                        word.DictionaryName = String.Empty;
-                                        word.Year = null;
-
-                                        words.Add(word);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (words.Count > 0)
-                            isSuggestion = true;
+                        proverbs.Add(proverb);
                     }
                 }
             }
 
             onLoadingEnds();
 
-            //return new ProverbsDictionarySearchResult(words);
-
-            return new ProverbsDictionarySearchResult(null);
-
-
-
-
-
-
-
-
-
+            return new ProverbsDictionarySearchResult(proverbs);
         }
     }
 }
