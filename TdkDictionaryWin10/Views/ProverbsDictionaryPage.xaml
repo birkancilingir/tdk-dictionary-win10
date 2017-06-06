@@ -230,12 +230,10 @@
                     <DataTemplate>
                         <StackPanel Margin="12,8,0,0">
 
-                            <TextBlock Style="{StaticResource TextBlockSubtitleStyle}">
+                            <TextBlock Style="{StaticResource TextBlockStyle}">
                                 <Run Text="{Binding Name}"
                                         FontSize="22"
-                                        Foreground="{StaticResource ContrastColorBrush}"
                                         FontWeight="Bold"/>
-                                <Run Text="{Binding Origin}" />
                             </TextBlock>
 
                             <RichTextBlock TextWrapping="WrapWholeWords"
