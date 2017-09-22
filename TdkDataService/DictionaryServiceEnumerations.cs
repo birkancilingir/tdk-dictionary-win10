@@ -12,6 +12,6 @@ namespace TdkDataService
 
         public enum GenderType { ALL, MAN, WOMAN, BOTH, NONE };
 
-        public enum SearchType { BY_MEANING, BY_NAME };
+        public enum SearchType { BY_NAME, BY_MEANING };
     }
 }

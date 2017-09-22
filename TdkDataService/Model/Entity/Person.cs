@@ -13,6 +13,6 @@ namespace TdkDataService.Model.Entity
 
         public GenderType Gender { get; set; }
 
-        public String Meaning { get; set; }
+        public String Description { get; set; }
     }
 }
