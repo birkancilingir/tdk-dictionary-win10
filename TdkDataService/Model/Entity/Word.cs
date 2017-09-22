@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TdkDataService.Model
+namespace TdkDataService.Model.Entity
 {
     public class Word
     {
