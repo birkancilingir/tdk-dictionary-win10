@@ -41,8 +41,8 @@ namespace TdkDictionaryWin10.ViewModels
             {
                 //TODO: new MatchTypeItem {Key = "FullMatch", Value = resourceLoader.GetString("ComboBoxItemFullMatch") },
                 //TODO: new MatchTypeItem {Key = "PartialMatch", Value = resourceLoader.GetString("ComboBoxItemPartialMatch") }
-                new MatchTypeItem {Key = "FullMatch", Value = "Tam sözcük" },
-                new MatchTypeItem {Key = "PartialMatch", Value = "1. ve/veya 2. kelimesi ... başlayan" }
+                new MatchTypeItem {Key = "FULL_MATCH", Value = "Tam sözcük" },
+                new MatchTypeItem {Key = "PARTIAL_MATCH", Value = "1. ve/veya 2. kelimesi ... başlayan" }
             };
 
             MatchType = MatchTypes[0];
@@ -178,7 +178,7 @@ namespace TdkDictionaryWin10.ViewModels
             filter.SearchString = name;
             filter.SearchId = id;
 
-            if (MatchType.Key.Equals("FullMatch"))
+            if (MatchType.Key.Equals("FULL_MATCH"))
             {
                 filter.Match = DictionaryServiceEnumerations.MatchType.FULL_MATCH;
                 IsPartialMatch = false;

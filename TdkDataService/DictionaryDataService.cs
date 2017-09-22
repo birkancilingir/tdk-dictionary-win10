@@ -397,56 +397,65 @@ namespace TdkDataService
 
                     if (rootNode != null)
                     {
-
-                        List<HtmlNode> personNodes = rootNode
+                        IEnumerable<HtmlNode> tableNodes = rootNode
                                 .Descendants("table")
-                                .Where(table => table.GetAttributeValue("class", "") == "hor-minimalist-b").First().Descendants("a").ToList();
+                                .Where(table => table.GetAttributeValue("id", "") == "hor-minimalist-b");
 
-                        if (personNodes.Count() > 0)
-                        {
-                            foreach (HtmlNode personNode in personNodes)
+                        if (tableNodes != null && tableNodes.Count() > 0) {
+                            List<HtmlNode> personNodes = tableNodes.First().Descendants("a").ToList();
+
+                            if (personNodes.Count() > 0)
                             {
-                                Person person = new Person();
-
-                                int id;
-                                String href = personNode.GetAttributeValue("href", "");
-                                int positionOfId = href.IndexOf("uid=") + 4;
-
-                                if (Int32.TryParse(href.Substring(positionOfId, href.IndexOf("&", positionOfId)), out id))
+                                foreach (HtmlNode personNode in personNodes)
                                 {
-                                    person.Id = id;
+                                    Person person = new Person();
+
+                                    int id;
+                                    String href = personNode.GetAttributeValue("href", "");
+                                    int positionOfId = href.IndexOf("uid=") + 4;
+
+                                    if (Int32.TryParse(href.Substring(positionOfId, href.IndexOf("&", positionOfId) - positionOfId), out id))
+                                    {
+                                        person.Id = id;
+                                    }
+                                    else
+                                    {
+                                        person.Id = null;
+                                    }
+
+                                    String[] innerTexts = personNode.InnerText.Split('-');
+                                    person.Name = innerTexts[0].Trim();
+
+                                    if (innerTexts[1].Trim().IndexOf("Erkek") > 0 && innerTexts[1].Trim().IndexOf("Kız") > 0)
+                                        person.Gender = DictionaryServiceEnumerations.GenderType.BOTH;
+                                    else if (innerTexts[1].Trim().IndexOf("Erkek") > 0)
+                                        person.Gender = DictionaryServiceEnumerations.GenderType.MAN;
+                                    else if (innerTexts[1].Trim().IndexOf("Kız") > 0)
+                                        person.Gender = DictionaryServiceEnumerations.GenderType.WOMAN;
+                                    else
+                                        person.Gender = DictionaryServiceEnumerations.GenderType.NONE;
+
+                                    person.Description = String.Empty;
+                                    person.Root = String.Empty;
+
+                                    people.Add(person);
                                 }
-                                else
+
+                                try
                                 {
-                                    person.Id = null;
+                                    HtmlNode lastPageNode = rootNode
+                                        .Descendants("div")
+                                        .Where(div => div.GetAttributeValue("class", "") == "paging").First()
+                                        .Descendants("a").Last();
+                                    if (lastPageNode != null)
+                                    {
+                                        String lastPageNodeHref = lastPageNode.GetAttributeValue("href", "");
+                                        Int32.TryParse(lastPageNodeHref.Substring(lastPageNodeHref.IndexOf("page=") + 5), out pageCount);
+                                    }
+                                } catch (Exception)
+                                {
+                                    pageCount = 1;
                                 }
-
-                                String[] innerTexts = personNode.InnerText.Split('-');
-                                person.Name = innerTexts[0].Trim();
-
-                                if (innerTexts[1].Trim().IndexOf("Erkek") > 0 && innerTexts[1].Trim().IndexOf("Kız") > 0)
-                                    person.Gender = DictionaryServiceEnumerations.GenderType.BOTH;
-                                else if (innerTexts[1].Trim().IndexOf("Erkek") > 0)
-                                    person.Gender = DictionaryServiceEnumerations.GenderType.MAN;
-                                else if (innerTexts[1].Trim().IndexOf("Kız") > 0)
-                                    person.Gender = DictionaryServiceEnumerations.GenderType.WOMAN;
-                                else
-                                    person.Gender = DictionaryServiceEnumerations.GenderType.NONE;
-
-                                person.Meaning = String.Empty;
-                                person.Root = String.Empty;
-
-                                people.Add(person);
-                            }
-
-                            HtmlNode lastPageNode = rootNode
-                                .Descendants("div")
-                                .Where(div => div.GetAttributeValue("class", "") == "paging").First()
-                                .Descendants("a").Last();
-                            if (lastPageNode != null)
-                            {
-                                String lastPageNodeHref = lastPageNode.GetAttributeValue("href", "");
-                                Int32.TryParse(lastPageNodeHref.Substring(lastPageNodeHref.IndexOf("page=") + 5), out pageCount);
                             }
                         }
                     }
@@ -504,7 +513,7 @@ namespace TdkDataService
                                 }
                                 else if (innerText.IndexOf("Anlam:") > 0)
                                 {
-                                    person.Meaning = innerText.Substring(6).Trim();
+                                    person.Description = innerText.Substring(6).Trim();
                                 }
                                 else
                                 {

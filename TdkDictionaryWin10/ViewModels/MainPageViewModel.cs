@@ -12,6 +12,8 @@ using Windows.ApplicationModel.Resources;
 using TdkDataService.Model;
 using Windows.Networking.Connectivity;
 using Windows.Web.Http;
+using TdkDataService.Filters;
+using TdkDataService.Model.Entity;
 
 namespace TdkDictionaryWin10.ViewModels
 {
@@ -184,12 +186,12 @@ namespace TdkDictionaryWin10.ViewModels
 
             if (MatchType.Key.Equals("FullMatch"))
             {
-                filter.MatchType = BigTurkishDictionaryFilter.MatchTypeFilter.FULL_MATCH;
+                filter.Match = DictionaryServiceEnumerations.MatchType.FULL_MATCH;
                 IsPartialMatch = false;
             }
             else
             {
-                filter.MatchType = BigTurkishDictionaryFilter.MatchTypeFilter.PARTIAL_MATCH;
+                filter.Match = DictionaryServiceEnumerations.MatchType.PARTIAL_MATCH;
                 IsPartialMatch = true;
             }
 

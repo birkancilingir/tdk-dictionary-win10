@@ -7,7 +7,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using TdkDataService;
+using TdkDataService.Filters;
 using TdkDataService.Model;
+using TdkDataService.Model.Entity;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
 using Windows.ApplicationModel.Resources;
@@ -16,17 +18,18 @@ using Windows.UI.Xaml.Navigation;
 
 namespace TdkDictionaryWin10.ViewModels
 {
-    public class ProverbsDictionaryViewModel : ViewModelBase
+
+    public class NamesDictionaryViewModel : ViewModelBase
     {
         private IDictionaryDataService _dataService = new DictionaryDataService();
 
-        public class MatchTypeItem
+        public class DropDownItem
         {
-            public String Key { get; set; }
+            public String Key { get; set; } // TODO: Key olarak enumaration geçirilmeli
             public String Value { get; set; }
         }
 
-        public ProverbsDictionaryViewModel()
+        public NamesDictionaryViewModel()
         {
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
             {
@@ -35,28 +38,61 @@ namespace TdkDictionaryWin10.ViewModels
 
             //ResourceLoader resourceLoader = new ResourceLoader();
 
-            MatchTypes = new ObservableCollection<MatchTypeItem>
+            MatchTypes = new ObservableCollection<DropDownItem>
             {
-                //TODO: new MatchTypeItem {Key = "InProverb", Value = resourceLoader.GetString("ComboBoxItemInProverb") },
-                //TODO: new MatchTypeItem {Key = "InMeaning", Value = resourceLoader.GetString("ComboBoxItemInMeaning") }
-                new MatchTypeItem {Key = "InProverb", Value = "Atasözü / Deyimde" },
-                new MatchTypeItem {Key = "InMeaning", Value = "Anlamda" }
+                //TODO: new MatchTypeItem {Key = "FullMatch", Value = resourceLoader.GetString("ComboBoxItemFullMatch") },
+                //TODO: new MatchTypeItem {Key = "PartialMatch", Value = resourceLoader.GetString("ComboBoxItemPartialMatch") }
+                new DropDownItem {Key = "PARTIAL_MATCH", Value = "Benzer" },
+                new DropDownItem {Key = "FULL_MATCH", Value = "Aynı" }
             };
-
             MatchType = MatchTypes[0];
 
-            Proverbs = new ObservableCollection<Proverb>();
+            GenderTypes = new ObservableCollection<DropDownItem>
+            {
+                new DropDownItem {Key = "ALL", Value = "Tüm adlar arasında"},
+                new DropDownItem {Key = "MAN", Value = "Erkek adları arasında"},
+                new DropDownItem {Key = "WOMAN", Value = "Kız adları arasında"},
+                new DropDownItem {Key = "BOTH", Value = "Erkek veya kız adı olanlar arasında"}
+            };
+            GenderType = GenderTypes[0];
+
+            SearchTypes = new ObservableCollection<DropDownItem>
+            {
+                new DropDownItem { Key = "BY_NAME", Value = "Ada göre"},
+                new DropDownItem { Key = "BY_MEANING", Value = "Anlama göre"}
+            };
+            SearchType = SearchTypes[0];
+
+            People = new ObservableCollection<Person>();
         }
 
         #region Data Members
 
-        public ObservableCollection<MatchTypeItem> MatchTypes { get; private set; }
+        public ObservableCollection<DropDownItem> MatchTypes { get; private set; }
 
-        private MatchTypeItem _matchType;
-        public MatchTypeItem MatchType
+        private DropDownItem _matchType;
+        public DropDownItem MatchType
         {
             get { return this._matchType; }
             set { Set(ref this._matchType, value); }
+        }
+
+        public ObservableCollection<DropDownItem>GenderTypes { get; private set; }
+
+        private DropDownItem _genderType;
+        public DropDownItem GenderType
+        {
+            get { return this._genderType; }
+            set { Set(ref this._genderType, value); }
+        }
+
+        public ObservableCollection<DropDownItem> SearchTypes { get; private set; }
+
+        private DropDownItem _searchType;
+        public DropDownItem SearchType
+        {
+            get { return this._searchType; }
+            set { Set(ref this._searchType, value); }
         }
 
         private String _Value = String.Empty;
@@ -66,11 +102,11 @@ namespace TdkDictionaryWin10.ViewModels
             set { Set(ref _Value, value); }
         }
 
-        private ObservableCollection<Proverb> _proverb;
-        public ObservableCollection<Proverb> Proverbs
+        private ObservableCollection<Person> _people;
+        public ObservableCollection<Person> People
         {
-            get { return this._proverb; }
-            set { Set(ref this._proverb, value); }
+            get { return this._people; }
+            set { Set(ref this._people, value); }
         }
 
         private Boolean _isNoResultFound = false;
@@ -121,18 +157,18 @@ namespace TdkDictionaryWin10.ViewModels
             NavigationService.Navigate(typeof(Views.SettingsPage), 2);
 
 
-        DelegateCommand<string> _SearchProverbs;
-        public DelegateCommand<string> SearchProverbs =>
-            _SearchProverbs
-                ?? (_SearchProverbs = new DelegateCommand<string>((word) =>
+        DelegateCommand<string> _SearchWords;
+        public DelegateCommand<string> SearchWords =>
+            _SearchWords
+                ?? (_SearchWords = new DelegateCommand<string>((word) =>
                 {
-                    Debug.WriteLine("SearchProverbs");
-                    ListProverbs(null, word);
+                    Debug.WriteLine("SearchWords");
+                    ListWords(null, word);
                 }, (word) => !String.IsNullOrEmpty(word))
                    );
 
 
-        private async void ListProverbs(Nullable<int> id, String name)
+        private async void ListWords(Nullable<int> id, String name)
         {
             if (String.IsNullOrWhiteSpace(name) || MatchType == null)
                 return;
@@ -145,32 +181,41 @@ namespace TdkDictionaryWin10.ViewModels
                 return;
             }
 
-            if (Proverbs != null)
-                Proverbs.Clear();
-            IsNoResultFound = false;
+            if (People != null)
+                People.Clear();
 
-            ProverbsDictionaryFilter filter = new ProverbsDictionaryFilter();
+            NamesDictionaryFilter filter = new NamesDictionaryFilter();
             filter.SearchString = name;
             filter.SearchId = id;
 
-            if (MatchType.Key.Equals("InProverb"))
-            {
-                filter.MatchType = ProverbsDictionaryFilter.MatchTypeFilter.IN_PROVERB;
-            }
+            if (MatchType.Key.Equals("FULL_MATCH"))
+                filter.Match = DictionaryServiceEnumerations.MatchType.FULL_MATCH;
             else
-            {
-                filter.MatchType = ProverbsDictionaryFilter.MatchTypeFilter.IN_MEANING;
-            }
+                filter.Match = DictionaryServiceEnumerations.MatchType.PARTIAL_MATCH;
 
+            if (GenderType.Key.Equals("ALL"))
+                filter.Gender = DictionaryServiceEnumerations.GenderType.ALL;
+            else if (GenderType.Key.Equals("MAN"))
+                filter.Gender = DictionaryServiceEnumerations.GenderType.MAN;
+            else if (GenderType.Key.Equals("WOMAN"))
+                filter.Gender = DictionaryServiceEnumerations.GenderType.WOMAN;
+            else
+                filter.Gender = DictionaryServiceEnumerations.GenderType.BOTH;
+            
+            if (MatchType.Key.Equals("BY_NAME"))
+                filter.Search = DictionaryServiceEnumerations.SearchType.BY_NAME;
+            else
+                filter.Search = DictionaryServiceEnumerations.SearchType.BY_MEANING;
+            
             try
             {
-                ProverbsDictionarySearchResult result = await _dataService.SearchProverbsDictionary(filter,
+                NamesDictionarySearchResult result = await _dataService.SearchNamesDictionary(filter,
                     () => { Views.Shell.SetBusy(true, "Lütfen Bekleyiniz"); },
                     () => { Views.Shell.SetBusy(false); }
                 );
 
-                Proverbs = new ObservableCollection<Proverb>(result.Proverbs);
-                if (Proverbs.Count == 0)
+                People = new ObservableCollection<Person>(result.People);
+                if (People.Count == 0)
                     IsNoResultFound = true;
             }
             catch (Exception e)
