@@ -110,15 +110,19 @@
   <ItemGroup>
     <Compile Include="DictionaryDataService.cs" />
     <Compile Include="DictionaryServiceConstants.cs" />
-    <Compile Include="DictionaryServiceFilters.cs" />
+    <Compile Include="DictionaryServiceEnumerations.cs" />
+    <Compile Include="Filters\BaseFilter.cs" />
+    <Compile Include="Filters\BigTurkishDictionaryFilter.cs" />
+    <Compile Include="Filters\NamesDictionaryFilter.cs" />
     <Compile Include="IDictionaryDataService.cs" />
-    <Compile Include="Model\Proverb.cs" />
+    <Compile Include="Model\Entity\Person.cs" />
+    <Compile Include="Model\NamesDictionarySearchResult.cs" />
     <Compile Include="Model\BigTurkishDictionarySearchResult.cs" />
-    <Compile Include="Model\ProverbsDictionarySearchResult.cs" />
-    <Compile Include="Model\Word.cs" />
+    <Compile Include="Model\Entity\Word.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\TdkDataService.rd.xml" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

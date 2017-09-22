@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TdkDataService.Model.Entity;
 
 namespace TdkDataService.Model
 {

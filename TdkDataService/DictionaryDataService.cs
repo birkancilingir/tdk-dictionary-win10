@@ -6,7 +6,9 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using TdkDataService.Filters;
 using TdkDataService.Model;
+using TdkDataService.Model.Entity;
 using Windows.Web.Http;
 
 namespace TdkDataService
@@ -106,12 +108,12 @@ namespace TdkDataService
                     {"kelime", System.Net.WebUtility.UrlEncode(filter.SearchString)}
                 };
 
-                switch (filter.MatchType)
+                switch (filter.Match)
                 {
-                    case BigTurkishDictionaryFilter.MatchTypeFilter.FULL_MATCH:
+                    case DictionaryServiceEnumerations.MatchType.FULL_MATCH:
                         parameters.Add("ayn", "tam");
                         break;
-                    case BigTurkishDictionaryFilter.MatchTypeFilter.PARTIAL_MATCH:
+                    case DictionaryServiceEnumerations.MatchType.PARTIAL_MATCH:
                         parameters.Add("ayn", "dzn");
                         break;
                     default:
@@ -121,7 +123,8 @@ namespace TdkDataService
 
                 responseBody = await PostRequest(uri, parameters);
             }
-            else {
+            else
+            {
                 uri = uri + "?option=com_bts&view=bts&kategori1=veritbn&kelimesec=" + filter.SearchId;
 
                 responseBody = await GetRequest(uri);
@@ -151,7 +154,7 @@ namespace TdkDataService
 
                 if (rootNode != null)
                 {
-                    if (filter.MatchType == BigTurkishDictionaryFilter.MatchTypeFilter.PARTIAL_MATCH)
+                    if (filter.Match == DictionaryServiceEnumerations.MatchType.PARTIAL_MATCH)
                     {
                         List<HtmlNode> nodes = doc.DocumentNode
                                 .Descendants()
@@ -310,75 +313,214 @@ namespace TdkDataService
             return new BigTurkishDictionarySearchResult(words, isSuggestion);
         }
 
-        public async Task<ProverbsDictionarySearchResult> SearchProverbsDictionary(ProverbsDictionaryFilter filter, Action onLoadingStarts, Action onLoadingEnds)
+        public async Task<NamesDictionarySearchResult> SearchNamesDictionary(NamesDictionaryFilter filter, Action onLoadingStarts, Action onLoadingEnds)
         {
             onLoadingStarts();
 
+            List<Person> people = new List<Person>();
+            int pageCount = 0;
+
             string responseBody = null;
 
-            string uri = DictionaryServiceConstants.SITE_ENDPOINT + "?option=com_atasozleri&arama=kelime";
-            Dictionary<String, String> parameters = new Dictionary<String, String>
+            string uri = DictionaryServiceConstants.SITE_ENDPOINT;
+            if (filter.SearchId == null)
             {
-                {"gonder", "ARA"},
-                {"kategori", "atalst"},
-                {"kelime", System.Net.WebUtility.UrlEncode(filter.SearchString)}
-            };
+                uri = uri + "?option=com_kisiadlari&arama=adlar";
+                if (filter.PageNumber > 0)
+                    uri = uri + "page=" + filter.PageNumber.ToString();
 
-            switch (filter.MatchType)
-            {
-                case ProverbsDictionaryFilter.MatchTypeFilter.IN_PROVERB:
-                    parameters.Add("hng", "tam");
-                    break;
-                case ProverbsDictionaryFilter.MatchTypeFilter.IN_MEANING:
-                    parameters.Add("hng", "dzn");
-                    break;
-                default:
-                    parameters.Add("hng", "tam");
-                    break;
-            }
-
-            responseBody = await PostRequest(uri, parameters);
-
-            List<Proverb> proverbs = new List<Proverb>();
-
-            using (StreamReader reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(responseBody))))
-            {
-                String responseHtml = reader.ReadToEnd();
-                
-                HtmlDocument doc = new HtmlDocument();
-                doc.OptionFixNestedTags = true;
-                doc.LoadHtml(responseHtml);
-
-                HtmlNode rootNode = doc.DocumentNode
-                    .Descendants("div")
-                    .Where(div => div.GetAttributeValue("class", "") == "main_body")
-                    .First();
-
-                if (rootNode != null)
+                Dictionary<String, String> parameters = new Dictionary<String, String>
                 {
-                    List<HtmlNode> nodes = doc.DocumentNode
-                                .Descendants()
-                                .Where(node => (node.Name == "p"
-                                                && (node.GetAttributeValue("class", "") == "thomicb"))).ToList();
-                    for (int i = 0; i < nodes.Count; i++)
+                    {"gonder", "ARA"},
+                    {"name", System.Net.WebUtility.UrlEncode(filter.SearchString)}
+                };
+
+                switch (filter.Match)
+                {
+                    case DictionaryServiceEnumerations.MatchType.FULL_MATCH:
+                        parameters.Add("like", "1");
+                        break;
+                    case DictionaryServiceEnumerations.MatchType.PARTIAL_MATCH:
+                        parameters.Add("like", "0");
+                        break;
+                    default:
+                        parameters.Add("like", "0");
+                        break;
+                }
+
+                switch (filter.Gender)
+                {
+                    case DictionaryServiceEnumerations.GenderType.ALL:
+                        parameters.Add("cinsi", "0");
+                        break;
+                    case DictionaryServiceEnumerations.GenderType.WOMAN:
+                        parameters.Add("cinsi", "1");
+                        break;
+                    case DictionaryServiceEnumerations.GenderType.MAN:
+                        parameters.Add("cinsi", "2");
+                        break;
+                    case DictionaryServiceEnumerations.GenderType.BOTH:
+                        parameters.Add("cinsi", "3");
+                        break;
+                    default:
+                        parameters.Add("cinsi", "0");
+                        break;
+                }
+
+                switch (filter.Search)
+                {
+                    case DictionaryServiceEnumerations.SearchType.BY_MEANING:
+                        parameters.Add("turu", "1");
+                        break;
+                    case DictionaryServiceEnumerations.SearchType.BY_NAME:
+                        parameters.Add("turu", "0");
+                        break;
+                    default:
+                        parameters.Add("turu", "0");
+                        break;
+                }
+
+                responseBody = await PostRequest(uri, parameters);
+
+                using (StreamReader reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(responseBody))))
+                {
+                    String responseHtml = reader.ReadToEnd();
+
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.OptionFixNestedTags = true;
+                    doc.LoadHtml(responseHtml);
+
+                    HtmlNode rootNode = doc.DocumentNode
+                        .Descendants("div")
+                        .Where(div => div.GetAttributeValue("class", "") == "main_body")
+                        .First();
+
+                    if (rootNode != null)
                     {
-                        HtmlNode nameSibling = nodes[i].NextSibling.NextSibling;
-                        HtmlNode descriptionSibling = nameSibling.NextSibling.NextSibling;
-                        HtmlNode typeSibling = descriptionSibling.NextSibling.NextSibling;
 
-                        Proverb proverb = new Proverb();
-                        proverb.Name = nameSibling.InnerText;
-                        proverb.Description = descriptionSibling.InnerText;
-                        proverb.Type = typeSibling.InnerText;
+                        List<HtmlNode> personNodes = rootNode
+                                .Descendants("table")
+                                .Where(table => table.GetAttributeValue("class", "") == "hor-minimalist-b").First().Descendants("a").ToList();
 
-                        proverbs.Add(proverb);
+                        if (personNodes.Count() > 0)
+                        {
+                            foreach (HtmlNode personNode in personNodes)
+                            {
+                                Person person = new Person();
+
+                                int id;
+                                String href = personNode.GetAttributeValue("href", "");
+                                int positionOfId = href.IndexOf("uid=") + 4;
+
+                                if (Int32.TryParse(href.Substring(positionOfId, href.IndexOf("&", positionOfId)), out id))
+                                {
+                                    person.Id = id;
+                                }
+                                else
+                                {
+                                    person.Id = null;
+                                }
+
+                                String[] innerTexts = personNode.InnerText.Split('-');
+                                person.Name = innerTexts[0].Trim();
+
+                                if (innerTexts[1].Trim().IndexOf("Erkek") > 0 && innerTexts[1].Trim().IndexOf("Kız") > 0)
+                                    person.Gender = DictionaryServiceEnumerations.GenderType.BOTH;
+                                else if (innerTexts[1].Trim().IndexOf("Erkek") > 0)
+                                    person.Gender = DictionaryServiceEnumerations.GenderType.MAN;
+                                else if (innerTexts[1].Trim().IndexOf("Kız") > 0)
+                                    person.Gender = DictionaryServiceEnumerations.GenderType.WOMAN;
+                                else
+                                    person.Gender = DictionaryServiceEnumerations.GenderType.NONE;
+
+                                person.Meaning = String.Empty;
+                                person.Root = String.Empty;
+
+                                people.Add(person);
+                            }
+
+                            HtmlNode lastPageNode = rootNode
+                                .Descendants("div")
+                                .Where(div => div.GetAttributeValue("class", "") == "paging").First()
+                                .Descendants("a").Last();
+                            if (lastPageNode != null)
+                            {
+                                String lastPageNodeHref = lastPageNode.GetAttributeValue("href", "");
+                                Int32.TryParse(lastPageNodeHref.Substring(lastPageNodeHref.IndexOf("page=") + 5), out pageCount);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                uri = uri + "?option=com_kisiadlari&arama=anlami&uid=" + filter.SearchId;
+
+                responseBody = await GetRequest(uri);
+
+                using (StreamReader reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(responseBody))))
+                {
+                    String responseHtml = reader.ReadToEnd();
+
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.OptionFixNestedTags = true;
+                    doc.LoadHtml(responseHtml);
+
+                    HtmlNode rootNode = doc.DocumentNode
+                        .Descendants("div")
+                        .Where(div => div.GetAttributeValue("class", "") == "main_body")
+                        .First();
+
+                    if (rootNode != null)
+                    {
+                        List<HtmlNode> personDetailNodes = rootNode
+                                .Descendants("table")
+                                .Where(table => table.GetAttributeValue("class", "") == "hor-minimalist-a").First().Descendants("tr").ToList();
+
+                        if (personDetailNodes.Count() > 0)
+                        {
+                            Person person = new Person();
+                            person.Id = filter.SearchId;
+
+                            foreach (HtmlNode personDetailNode in personDetailNodes)
+                            {
+
+                                String innerText = personDetailNode.InnerText;
+
+                                if (innerText.IndexOf("Köken:") > 0)
+                                {
+                                    person.Root = innerText.Substring(6).Trim();
+                                }
+                                else if (innerText.IndexOf("Cinsiyet:") > 0)
+                                {
+                                    if (innerText.IndexOf("Erkek") > 0 && innerText.IndexOf("Kız") > 0)
+                                        person.Gender = DictionaryServiceEnumerations.GenderType.BOTH;
+                                    else if (innerText.IndexOf("Erkek") > 0)
+                                        person.Gender = DictionaryServiceEnumerations.GenderType.MAN;
+                                    else if (innerText.IndexOf("Kız") > 0)
+                                        person.Gender = DictionaryServiceEnumerations.GenderType.WOMAN;
+                                    else
+                                        person.Gender = DictionaryServiceEnumerations.GenderType.NONE;
+                                }
+                                else if (innerText.IndexOf("Anlam:") > 0)
+                                {
+                                    person.Meaning = innerText.Substring(6).Trim();
+                                }
+                                else
+                                {
+                                    person.Name = innerText;
+                                }
+
+                                people.Add(person);
+                            }
+                        }
                     }
                 }
             }
 
             onLoadingEnds();
 
-            return new ProverbsDictionarySearchResult(proverbs);
+            return new NamesDictionarySearchResult(people, pageCount);
         }
     }
 }
