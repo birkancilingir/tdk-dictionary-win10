@@ -74,7 +74,8 @@
                             RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True"
                             PlaceholderText="Ara"
                             QueryIcon="Find"
-                            Margin="0,0,12,0">
+                            Margin="0,0,12,0"
+                            Width="270">
                 <Interactivity:Interaction.Behaviors>
                     <Core:EventTriggerBehavior EventName="QuerySubmitted">
                         <Core:InvokeCommandAction Command="{x:Bind ViewModel.SearchWords}" InputConverter="{StaticResource AutoSuggestQueryParameterConverter}" />
@@ -86,168 +87,23 @@
 				    RelativePanel.Below="SearchAutoSuggestBox" RelativePanel.AlignLeftWithPanel="True"
 				    ItemsSource="{Binding MatchTypes}" DisplayMemberPath="Value" 
 				    SelectedItem="{Binding MatchType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Width="270" Padding="0,0,0,0"  Margin="12,0,0,0" BorderThickness="0">
+                    Width="Auto" Padding="0,0,0,0"  Margin="12,0,0,0" BorderThickness="0">
             </ComboBox>
 
             <ComboBox x:Name="ComboBoxGenderType"
 				    RelativePanel.Below="ComboBoxMatchType" RelativePanel.AlignLeftWithPanel="True"
 				    ItemsSource="{Binding GenderTypes}" DisplayMemberPath="Value" 
 				    SelectedItem="{Binding GenderType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Width="270" Padding="0,0,0,0"  Margin="12,0,0,0" BorderThickness="0">
+                    Width="Auto" Padding="0,0,0,0"  Margin="12,0,0,0" BorderThickness="0">
             </ComboBox>
 
             <ComboBox x:Name="ComboBoxSearchType"
 				    RelativePanel.Below="ComboBoxGenderType" RelativePanel.AlignLeftWithPanel="True"
 				    ItemsSource="{Binding SearchTypes}" DisplayMemberPath="Value" 
 				    SelectedItem="{Binding SearchType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Width="270" Padding="0,0,0,0"  Margin="12,0,0,0" BorderThickness="0">
+                    Width="Auto" Padding="0,0,0,0"  Margin="12,0,0,0" BorderThickness="0">
             </ComboBox>
-
-            <!--
-            <Grid RelativePanel.Below="SearchAutoSuggestBox" RelativePanel.AlignLeftWithPanel="True">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="32" />
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Name="TextBlockSearchType"
-                           Padding="12,0,0,0"
-                           Grid.Row="0" Grid.Column="0"
-                           Text="{Binding MatchType.Value}"
-                           VerticalAlignment="Center">
-                    <FlyoutBase.AttachedFlyout>
-                        <Flyout Placement="Bottom">
-                            <Border x:Name="PopupBorder"
-                                    BorderBrush="{ThemeResource SystemControlForegroundChromeHighBrush}"
-                                    Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="0,-1,0,-1"
-                                    BorderThickness="0">
-                                <ScrollViewer x:Name="ScrollViewer"
-                                                HorizontalScrollBarVisibility="Hidden"
-                                                VerticalScrollBarVisibility="Hidden"
-                                                AutomationProperties.AccessibilityView="Raw"
-                                                Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
-                                                MinWidth="{Binding TemplateSettings.DropDownContentMinWidth,RelativeSource={RelativeSource Mode=TemplatedParent}}" 
-                                                VerticalSnapPointsType="OptionalSingle"
-                                                VerticalSnapPointsAlignment="Near"
-                                                ZoomMode="Disabled">
-                                    <ItemsControl ItemsSource="{Binding MatchTypes}" >
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Margin="16,0,0,0">
-                                                    <TextBlock Text="{Binding Value}" Style="{StaticResource TextBlockSubtitleStyle}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl> 
-                                </ScrollViewer>
-                            </Border>
-                        </Flyout>
-                    </FlyoutBase.AttachedFlyout>
-                    <Interactivity:Interaction.Behaviors>
-                        <Core:EventTriggerBehavior EventName="Tapped">
-                            <Behaviors:OpenFlyoutAction />
-                        </Core:EventTriggerBehavior>
-                    </Interactivity:Interaction.Behaviors>
-                </TextBlock>
-                <FontIcon x:Name="DropDownGlyph"
-                          Glyph="&#xE0E5;" Margin="0,10,10,10"
-                          Grid.Row="0" Grid.Column="1"
-                          Foreground="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
-                          FontSize="12" FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                          HorizontalAlignment="Right"  VerticalAlignment="Center"/>
-            </Grid>
-            
-            <TextBlock x:Name="TextBlockSearchType"
-                       RelativePanel.Below="SearchAutoSuggestBox" RelativePanel.AlignLeftWithPanel="True"
-                       Text="{Binding MatchType.Value}" >
-                 <FlyoutBase.AttachedFlyout>
-                    <Flyout Placement="Bottom">
-                        <StackPanel>
-                            <TextBlock Text="Awesome Flyout!" />
-                            <TextBlock Text="Awesome Flyout!" />
-                        </StackPanel>
-                    </Flyout>
-                </FlyoutBase.AttachedFlyout>
-                <Interactivity:Interaction.Behaviors>
-                    <Core:EventTriggerBehavior EventName="Tapped">
-                        <Behaviors:OpenFlyoutAction />
-                    </Core:EventTriggerBehavior>
-                </Interactivity:Interaction.Behaviors>
-            </TextBlock>
-            
-            
-            <ComboBox x:Name="ComboBoxSearchType"
-				    RelativePanel.Below="SearchAutoSuggestBox" RelativePanel.AlignLeftWithPanel="True"
-				    ItemsSource="{Binding MatchTypes}" DisplayMemberPath="Value" 
-				    SelectedItem="{Binding MatchType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Width="270"
-                    Padding="0,0,0,0"/>
-
-            
-            <TextBox x:Name="FilterTextBox" Width="250" MinWidth="250"
-				    RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True"
-				    Margin="0" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				    TextWrapping="Wrap">
-                <Interactivity:Interaction.Behaviors>
-                    <Behaviors:TextBoxEnterKeyBehavior>
-                        <Core:InvokeCommandAction Command="{x:Bind ViewModel.SearchWords}" CommandParameter="{Binding Value}" />
-                    </Behaviors:TextBoxEnterKeyBehavior>
-                    <Core:EventTriggerBehavior>
-                        <Behaviors:FocusAction />
-                    </Core:EventTriggerBehavior>
-                </Interactivity:Interaction.Behaviors>
-            </TextBox>
-
-            <Button x:Name="SearchButton"  Margin="12,0"
-				    RelativePanel.AlignTopWithPanel="True" RelativePanel.RightOf="FilterTextBox"
-				    Content="Ara" Command="{x:Bind ViewModel.SearchWords}" CommandParameter="{Binding Value}"
-                    Padding="5,0,5,0"/>
-
-
-            <ComboBox x:Name="ComboBoxSearchType"
-				    RelativePanel.Below="FilterTextBox" RelativePanel.AlignLeftWithPanel="True"
-				    ItemsSource="{Binding MatchTypes}" DisplayMemberPath="Value" 
-				    SelectedItem="{Binding MatchType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>-->
         </RelativePanel>
-
-        <!--
-        <Grid Grid.Row="1" VerticalAlignment="Top" Padding="12,8,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto "/>
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ComboBox x:Name="ComboBoxSearchType" Grid.Row="0" Grid.ColumnSpan="2"
-                      Margin="0,0,10,5"
-				    RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True"
-				    ItemsSource="{Binding MatchTypes}" DisplayMemberPath="Value" 
-				    SelectedItem="{Binding MatchType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch"/>
-
-            <TextBox x:Name="FilterTextBox" Grid.Row="1" Grid.Column="0"
-				    RelativePanel.Below="ComboBoxSearchType" RelativePanel.AlignLeftWith="ComboBoxSearchType"
-				    Margin="0" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				    TextWrapping="Wrap">
-                <Interactivity:Interaction.Behaviors>
-                    <Behaviors:TextBoxEnterKeyBehavior>
-                        <Core:InvokeCommandAction Command="{x:Bind ViewModel.SearchWords}" CommandParameter="{Binding Value}" />
-                    </Behaviors:TextBoxEnterKeyBehavior>
-                    <Core:EventTriggerBehavior>
-                        <Behaviors:FocusAction />
-                    </Core:EventTriggerBehavior>
-                </Interactivity:Interaction.Behaviors>
-            </TextBox>
-
-            <Button x:Name="SearchButton"  Margin="10,0,10,0" Grid.Row="1" Grid.Column="1"
-				    RelativePanel.AlignTopWith="FilterTextBox" RelativePanel.RightOf="FilterTextBox"
-				    Content="Ara" Command="{x:Bind ViewModel.SearchWords}" CommandParameter="{Binding Value}"
-                    Padding="25,0,25,0" Height="{Binding ActualHeight, ElementName=FilterTextBox}" />
-        </Grid>
-        -->
 
         <ScrollViewer Grid.Row="2"
 			    VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
