@@ -27,7 +27,7 @@ namespace TdkDictionaryWin10.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             var index = _SerializationService.Deserialize<int>(e.Parameter?.ToString());
-            MyPivot.SelectedIndex = index;
+            SettingsPivot.SelectedIndex = index;
         }
     }
 }
