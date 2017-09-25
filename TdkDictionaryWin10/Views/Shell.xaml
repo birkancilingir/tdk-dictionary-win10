@@ -14,7 +14,7 @@
 
     <Controls:ModalDialog x:Name="ModalContainer" CanBackButtonDismiss="False" DisableBackButtonWhenModal="True">
         <Controls:ModalDialog.Content>
-            <Controls:HamburgerMenu x:Name="MyHamburgerMenu">
+            <Controls:HamburgerMenu x:Name="MainMenu">
 
                 <Controls:HamburgerMenu.PrimaryButtons>
                     <!--  Mainpage button  -->
@@ -26,13 +26,13 @@
                     </Controls:HamburgerButtonInfo>
                     <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:BigTurkishDictionaryPage">
                         <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="48" Height="48" Symbol="Find" />
+                            <TextBlock Width="48" Height="48" FontSize="20" Padding="8 9">BTS</TextBlock>
                             <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Büyük Türkçe Sözlük" />
                         </StackPanel>
                     </Controls:HamburgerButtonInfo>
                     <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:NamesDictionaryPage">
                         <StackPanel Orientation="Horizontal">
-                            <SymbolIcon Width="48" Height="48" Symbol="Find" />
+                            <TextBlock Width="48" Height="48" FontSize="20" Padding="6 9">KAS</TextBlock>
                             <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Kişi Adları Sözlüğü" />
                         </StackPanel>
                     </Controls:HamburgerButtonInfo>

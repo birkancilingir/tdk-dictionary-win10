@@ -47,10 +47,23 @@
                 <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilySemiLight}" />
                 <Setter Property="TextLineBounds" Value="Full" />
                 <Setter Property="LineHeight" Value="20" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+
+            <Style x:Key="ImportantTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
+                <Setter Property="Foreground" Value="Red"/>
+            </Style>
+
+            <Style x:Key="TextBlockTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
+                <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyNormal}" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Foreground" Value="{ThemeResource CustomColor}" />
             </Style>
 
             <Style x:Key="TextBlockSubtitleStyle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
                 <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyNormal}" />
+                <Setter Property="Foreground" Value="{ThemeResource CustomColor}"/>
             </Style>
 
             <Style x:Key="RichTextBlockStyle" TargetType="RichTextBlock" BasedOn="{StaticResource BaseRichTextBlockStyle}">

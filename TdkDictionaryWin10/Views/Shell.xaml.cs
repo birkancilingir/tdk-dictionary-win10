@@ -12,7 +12,7 @@ namespace TdkDictionaryWin10.Views
     public sealed partial class Shell : Page
     {
         public static Shell Instance { get; set; }
-        public static HamburgerMenu HamburgerMenu { get { return Instance.MyHamburgerMenu; } }
+        public static HamburgerMenu HamburgerMenu { get { return Instance.MainMenu; } }
 
         public Shell()
         {
@@ -35,7 +35,7 @@ namespace TdkDictionaryWin10.Views
 
         public void SetNavigationService(INavigationService navigationService)
         {
-            MyHamburgerMenu.NavigationService = navigationService;
+            MainMenu.NavigationService = navigationService;
         }
 
         public static void SetBusy(bool busy, string text = null)
