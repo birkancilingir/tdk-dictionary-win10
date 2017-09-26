@@ -67,6 +67,10 @@
 
         <!--  content  -->
         <Pivot x:Name="SettingsPivot" Grid.Row="1">
+            <Pivot.Resources>
+                <Style TargetType="PivotHeaderItem" BasedOn="{StaticResource PivotHeaderItemStyle}" />
+            </Pivot.Resources>
+            
             <PivotItem DataContext="{Binding SettingsPartViewModel}" Header="Genel">
                 <ScrollViewer Margin="0,12,-12,0" HorizontalContentAlignment="Left"
                               VerticalScrollBarVisibility="Auto">
@@ -84,14 +88,14 @@
                         <TextBlock Style="{StaticResource TextBlockTitleStyle}">
                             v1.5.0.0
                         </TextBlock>
-                        <TextBlock Margin="0 0 0 10" Style="{StaticResource TextBlockStyle}">
+                        <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
                             - Windows 10 için yeniden yazıldı.
                         </TextBlock>
 
                         <TextBlock Style="{StaticResource TextBlockTitleStyle}">
                             v1.4.0.0
                         </TextBlock>
-                        <TextBlock Margin="0 0 0 10" Style="{StaticResource TextBlockStyle}">
+                        <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
                             - Görsel düzenlemeler yapıldı.
                             <LineBreak />- Türkiye Türkçesi Ağızları Sözlüğü kısımlarında bulunan hatalı gösterimler düzeltildi.
                         </TextBlock>
@@ -99,7 +103,7 @@
                         <TextBlock Style="{StaticResource TextBlockTitleStyle}">
                             v1.3.0.0
                         </TextBlock>
-                        <TextBlock Margin="0 0 0 10" Style="{StaticResource TextBlockStyle}">
+                        <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
                             - Uygulama arka plana geçerken oluşan hata giderildi.
                             <LineBreak />- Paylaşım linki düzeltildi.
                         </TextBlock>
@@ -107,7 +111,7 @@
                         <TextBlock Style="{StaticResource TextBlockTitleStyle}">
                             v1.2.0.0
                         </TextBlock>
-                        <TextBlock Margin="0 0 0 10" Style="{StaticResource TextBlockStyle}">
+                        <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
                             - Görsel düzenlemeler yapıldı.
                             <LineBreak />- Genel hata düzenlemeleri yapıldı.
                         </TextBlock>
@@ -115,7 +119,7 @@
                         <TextBlock Style="{StaticResource TextBlockTitleStyle}">
                             v1.1.0.0
                         </TextBlock>
-                        <TextBlock Margin="0 0 0 10" Style="{StaticResource TextBlockStyle}">
+                        <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
                             - İlk sürüm
                         </TextBlock>
                     </StackPanel>
@@ -130,28 +134,28 @@
                         </Border.Background>
                         <Image Margin="12" Source="{Binding Logo}" Stretch="None" />
                     </Border>
-                    
+
                     <StackPanel>
-                        <TextBlock Margin="0,0,0,12" FontSize="24" Text="{Binding DisplayName}" />
-                        <TextBlock Style="{StaticResource TitleTextBlockStyle}">
+                        <TextBlock Margin="0,0,0,0" FontSize="24" Text="{Binding DisplayName}" Style="{StaticResource TextBlockTitleStyle}" />
+                        <TextBlock  Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
                             Version <Run Text="{Binding Version}" />
                         </TextBlock>
-                        
-                        <TextBlock Style="{StaticResource TitleTextBlockStyle}">
+
+                        <TextBlock Style="{StaticResource TextBlockTitleStyle}">
                             Geliştiren
                         </TextBlock>
-                        <TextBlock Margin="0 0 0 10">
+                        <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
                             Birkan Çilingir
                         </TextBlock>
-                            
-                        <TextBlock Style="{StaticResource TitleTextBlockStyle}">
+
+                        <TextBlock Style="{StaticResource TextBlockTitleStyle}">
                             Kullanılan Kütüphaneler
                         </TextBlock>
-                        <TextBlock Margin="0 0 0 10">
+                        <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
                             Template10<LineBreak />Html Agility
                         </TextBlock>
 
-                        <TextBlock TextWrapping="WrapWholeWords" Style="{StaticResource ImportantTextBlockStyle}">
+                        <TextBlock Style="{StaticResource ImportantTextBlockStyle}">
                             TDK Sözlük uygulaması Türk Dil Kurumu resmi sitesinde bulunan Büyük Türkçe Sözlük verilerini kullanmaktadır. Uygulama Türk Dil Kurumu'nun resmi uygulaması değildir.
                         </TextBlock>
                     </StackPanel>

@@ -42,6 +42,10 @@
                 <Setter Property="GrabberVisibility" Value="Visible" />
             </Style>
 
+            <Style x:Key="PivotHeaderItemStyle" TargetType="PivotHeaderItem">
+                <Setter Property="Foreground" Value="{ThemeResource CustomColor}" />
+            </Style>
+
             <!-- TextBlock -->
             <Style x:Key="TextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
                 <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilySemiLight}" />
@@ -51,7 +55,7 @@
                 <Setter Property="Foreground" Value="Black" />
             </Style>
 
-            <Style x:Key="ImportantTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
+            <Style x:Key="ImportantTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
                 <Setter Property="Foreground" Value="Red"/>
             </Style>
 
