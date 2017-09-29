@@ -68,7 +68,7 @@
         <!--  content  -->
         <Pivot x:Name="SettingsPivot" Grid.Row="1">
             <Pivot.Resources>
-                <Style TargetType="PivotHeaderItem" BasedOn="{StaticResource PivotHeaderItemStyle}" />
+                <Style TargetType="PivotHeaderItem" BasedOn="{StaticResource PivotHeaderItemStyle1}" />
             </Pivot.Resources>
             
             <PivotItem DataContext="{Binding SettingsPartViewModel}" Header="Genel">
@@ -128,7 +128,7 @@
             <PivotItem Header="Hakkında">
                 <Grid DataContext="{Binding AboutPartViewModel}">
                     <Border HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="DimGray"
-                            BorderThickness="1" IsHitTestVisible="False">
+                            BorderThickness="1" IsHitTestVisible="False" Height="80" Width="80">
                         <Border.Background>
                             <SolidColorBrush Color="{ThemeResource SystemAccentColor}" />
                         </Border.Background>
@@ -152,7 +152,7 @@
                             Kullanılan Kütüphaneler
                         </TextBlock>
                         <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockStyle}">
-                            Template10<LineBreak />Html Agility
+                            Template10<LineBreak />Html Agility Pack
                         </TextBlock>
 
                         <TextBlock Style="{StaticResource ImportantTextBlockStyle}">
