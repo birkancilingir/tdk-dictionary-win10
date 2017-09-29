@@ -46,6 +46,41 @@
                 <Setter Property="Foreground" Value="{ThemeResource CustomColor}" />
             </Style>
 
+            <Style x:Key="PivotHeaderItemStyle1" TargetType="PivotHeaderItem">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{ThemeResource CustomColor}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Padding" Value="10,0,10,0"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="PivotHeaderItem">
+                            <Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="SelectionStates">
+                                        <VisualState x:Name="Unselected">
+                                            <Storyboard>
+                                                <ColorAnimation Duration="0" Storyboard.TargetName="contentPresenter" Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)" To="{StaticResource CustomColor}"/>
+                                                <DoubleAnimation  Duration="0" Storyboard.TargetName="contentPresenter" Storyboard.TargetProperty="(UIElement.Opacity)" To="0.75" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Selected">
+                                            <Storyboard>
+                                                <ColorAnimation Duration="0" Storyboard.TargetName="contentPresenter" Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)" To="{StaticResource CustomColor}"/>
+                                                <DoubleAnimation Duration="0" Storyboard.TargetName="contentPresenter" Storyboard.TargetProperty="(UIElement.Opacity)" To="1" />
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border Background="{TemplateBinding Background}" >
+                                    <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" />
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <!-- TextBlock -->
             <Style x:Key="TextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
                 <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilySemiLight}" />
